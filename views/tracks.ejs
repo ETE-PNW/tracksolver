@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Models Available</title>
+    <style>
+                body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #232222;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            border-radius: 5px;
+        }
+        th {
+            background-color: #af4c5b;
+        }
+        .totals-row {
+            background-color: #ebbac3; /* Replace with your desired color */
+        }
+        h1, h2, h3 {
+            text-align: center;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #af4c5b;
+            text-decoration: none;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f2f2f2;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .button-group {
+            display: flex;
+            width: 50%;
+            justify-content: space-between;
+            margin: 0 auto;
+        }
+        .button-group button {
+            font-size: 1em;
+            background-color: #af4c5b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 5px;
+            padding: 10px;
+            width: 50%;
+            margin-right: 2px;
+        }
+        .button-group button.selected {
+            background-color: #df98a5;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+        .button-group, .button-group button, table {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<h1>Tracksolver can work with the following track sets</h1>
+<% Object.keys(trackTypes).forEach(trackType => {%> 
+    <h2 style="text-align:center"><%= trackType %></h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Length</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% trackTypes[trackType].sort((a,b)=> a.length>b.length ? 1 : -1).forEach(track => { %>
+            <tr>
+                <td><%= track.model %></td>
+                <td><%= track.length %></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+<% }) %>
+<a href="/">Back</a>
+<footer>
+    Developed by Eugenio Pace and Magnus Christerson - 2024 - (c)
+</footer>
+</body>
+</html>

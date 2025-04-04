@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Models</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #232222;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            border-radius: 5px;
+        }
+        th {
+            background-color: #af4c5b;
+        }
+        .totals-row {
+            background-color: #ebbac3; /* Replace with your desired color */
+        }
+        h2, h3 {
+            text-align: center;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #af4c5b;
+            text-decoration: none;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f2f2f2;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .button-group {
+            display: flex;
+            width: 50%;
+            justify-content: space-between;
+            margin: 0 auto;
+        }
+        .button-group button {
+            font-size: 1em;
+            background-color: #af4c5b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 5px;
+            padding: 10px;
+            width: 50%;
+            margin-right: 2px;
+        }
+        .button-group button.selected {
+            background-color: #df98a5;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+        .button-group, .button-group button, table {
+            width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <%
+        const solutions = result.length;
+        const msg = solutions == 1 ? "solution" : "solutions";
+    %>
+    <h2>Found <%=`${solutions} ${msg}`%> for <%=targetLength%>mm of <%=trackModel%> rail</h2>
+    <%if(tracksToUse && tracksToUse.length > 0 ){%>
+    <h3>Using these tracks: <%=`${tracksToUse.join(', ')}`%></h3>
+    <%}%>
+    <h3 id="sortCriteria"></h3>
+    <%if(solutions>1){%>
+    <div class="button-group">
+        <button type="button" id="sortByErrorAndTrackCount" onclick="sortByErrorAndTrackCount()" class="selected">Sort by Error/Tracks count</button>
+        <button type="button" id="sortByTrackCount" onclick="sortByTrackCount()">Sort by Track Count</button>
+    </div>
+    <%}%>
+    <div id="solutions">
+    </div>
+    <a href="/">Back</a>
+    <footer>
+        Developed by Eugenio Pace and Magnus Christerson - 2024 - (c)
+    </footer>
+</body>
+<script>
+    const result = <%-JSON.stringify(result)%>;
+    const sortByErrorAndTrackCountButton = document.getElementById('sortByErrorAndTrackCount');
+    const sortByTrackCountButton = document.getElementById('sortByTrackCount');
+    
+    function createSolutionsSection(){
+        const solutions = document.getElementById('solutions');
+        solutions.innerHTML = '';
+
+        result.forEach((r, i) => {
+                var h3 = document.createElement('h3');
+                h3.textContent = `Solution ${i+1} - Error: ${r.error} mm`;
+                solutions.appendChild(h3);
+
+                var table = document.createElement('table');
+                var thead = document.createElement('thead');
+                var tr = document.createElement('tr');
+                ['Model', 'Length', 'Count', 'Total'].forEach(text => {
+                    var th = document.createElement('th');
+                    th.textContent = text;
+                    tr.appendChild(th);
+                });
+                thead.appendChild(tr);
+                table.appendChild(thead);
+
+                var tbody = document.createElement('tbody');
+                r.tracks.forEach(track => {
+                    var tr = document.createElement('tr');
+                    [track.model, track.length, track.count, (track.count*track.length).toFixed(1)].forEach(text => {
+                        var td = document.createElement('td');
+                        td.textContent = text;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+
+                function createStrongTD(text){
+                    var td = document.createElement('td');
+                    var strong = document.createElement('strong');
+                    strong.textContent = text;
+                    td.appendChild(strong);
+                    return td;
+                }
+
+                //Add totals line
+                var tr = document.createElement('tr');
+                tr.className = 'totals-row';
+                tr.appendChild(createStrongTD('Totals'));
+                
+                //Empty
+                tr.appendChild(document.createElement('td'));
+                
+                //Total tracks
+                tr.appendChild(createStrongTD(r.totalTracks));
+
+                //Total length
+                tr.appendChild(createStrongTD(r.tracks.reduce((acc, t) => acc + t.count * t.length, 0).toFixed(1)));
+
+                tbody.appendChild(tr);
+
+                table.appendChild(tbody);
+                solutions.appendChild(table);
+            });
+    }
+
+    function sortByErrorAndTrackCount(){
+        result.sort((a, b) => {
+            if(a.error !== b.error) {
+                return a.error - b.error;
+            } else {
+                return a.totalTracks - b.totalTracks;
+            }
+        });
+        if(result.length>1){
+            document.getElementById("sortCriteria").textContent = "Sorted by error tolerance and increasing number of tracks required.";
+        }
+        createSolutionsSection();
+        
+        sortByErrorAndTrackCountButton.classList.add('selected');
+        sortByTrackCountButton.classList.remove('selected');
+    }
+
+    function sortByTrackCount(){
+        result.sort((a, b) => a.totalTracks - b.totalTracks);
+        if(result.length>1){
+            document.getElementById("sortCriteria").textContent = "Sorted by tracks count regardless of error.";
+        }
+        createSolutionsSection();
+        
+        sortByTrackCountButton.classList.add('selected');
+        sortByErrorAndTrackCountButton.classList.remove('selected');
+    }
+
+    window.onload = sortByErrorAndTrackCount;
+
+</script>
+</html>
