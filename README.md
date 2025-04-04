@@ -2,7 +2,7 @@
 
 Solves tracks to a given length - Works with Fleischmann, Märklin-C, K, Z, and M track, and Märklin Gauge 1.
 
-Track definitions are kept in `track.js`. Lengths are all expressed in mm:
+Track definitions are kept in `trackTypes.js`. Lengths are all expressed in mm:
 
 ```js
 ...
