@@ -1,6 +1,6 @@
 # Tracksolver
 
-Solves tracks to a given length - Works with Fleischmann, Märklin-C, K, Z, and M track, and Märklin Gauge 1.
+Solves tracks to a given length, with a configurable tolerance - Works with Fleischmann, Märklin-C, K, Z, and M track, and Märklin Gauge 1.
 
 Track definitions are kept in `trackTypes.js`. Lengths are all expressed in mm:
 
@@ -23,4 +23,11 @@ Track definitions are kept in `trackTypes.js`. Lengths are all expressed in mm:
 
 Live application is available [here](https://www.tracksolver.com/tracksolver).
 
+Originally developed by @eugeniop and @magnuschr
 
+## Running locally
+
+1. Clone repo
+2. Run `npm i`
+3. Run `nodemon` or `node index`
+4. Open a browser on http://localhost:3000
